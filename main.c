@@ -7,6 +7,7 @@
 #define adj_number 8
 #define possible_walk 1
 #define wall 0
+#define DEFAULT_CHESTS 0 //1 if you want default spawn setup
 
 elements vertex_map[MAP_HEIGHT][MAP_WIDTH] = {};
 
@@ -178,20 +179,22 @@ int main(int argc, const char *argv[]){
     array_t road[4];
     points chests[4] = {
         // on définit les coord des coffres (mais le joueur va les choisirs)
-        {.x = 0, .y = 39},
-        {.x = 0, .y = 38},
+        {.x = 6, .y = 15},
+        {.x = 25, .y = 9},
         {.x = 0, .y = 37},
-        {.x = 0, .y = 36},
+        {.x = 38, .y = 36},
     };
     srand(time(NULL));
     int good_chest = rand() % 4;
     points spawn;
-    chest_spawn(map, chests);
+    if(DEFAULT_CHESTS == 0)
+        chest_spawn(map, chests);    
     spawn_scanf(map, &spawn, chests); //on demande au joueur son spawn
     bool chest_find = false;
     int i = 0;
     int test_first = 0;
     array_t alreadyTry[5];
+    array_new(alreadyTry, 5, false);
     do
     {
         printf("Choisissez le coffre que vous voulez tester (0,1,2,3): ");
@@ -221,7 +224,7 @@ int main(int argc, const char *argv[]){
         }
         else{
             printf("Dommage ce n'est pas le bon coffre !\n");
-            array_add(alreadyTry,i);
+            array_add(alreadyTry,&i);
         }
     test_first ++;
     } while (chest_find == false);
