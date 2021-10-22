@@ -35,7 +35,7 @@ void spawn_scanf(int map[MAP_HEIGHT][MAP_WIDTH], points *p_spawn, points chests_
             continue;
         }
 
-        if (p_spawn->x < 0 || p_spawn->x >= 40 || p_spawn->y < 0 || p_spawn->y >= 40)
+        if (p_spawn->x < 0 || p_spawn->x >= 40 || p_spawn->y < 0 || p_spawn->y >= 40)//verif des coord du spawn
         {
             printf("Vous etes en dehors de la map\n");
             continue;
@@ -76,7 +76,7 @@ void chest_spawn(int map[MAP_HEIGHT][MAP_WIDTH], points s_chest[4])
             }
             for (int x = 0; x < j; x++)
             {
-                if ((s_chest[x].y == s_chest[j].y) && (s_chest[x].x == s_chest[j].x))
+                if ((s_chest[x].y == s_chest[j].y) && (s_chest[x].x == s_chest[j].x))//on verifie l'emplacements des coffres
                 {
                     printf("2 Coffres au même endroits, impossible !\n");
                     test = false;
@@ -118,7 +118,7 @@ bool astar(int map[MAP_HEIGHT][MAP_WIDTH], points origin, points destination, ar
         }
     }
     bool closed_list[MAP_HEIGHT][MAP_WIDTH] = {{false}}; //on init à faux toute la closed list
-    linked_list_t *open_list = ll_new();                 // liste prioritaire
+    linked_list_t *open_list = ll_new(); // liste prioritaire
     ll_insert_heuristic(open_list, &vertex_map[origin.y][origin.x]);
     // tant que open_list n'est pas vide
     while (ll_is_empty(open_list) == false)
@@ -158,7 +158,7 @@ bool astar(int map[MAP_HEIGHT][MAP_WIDTH], points origin, points destination, ar
                 continue;
             bool in_open_list = v != NULL;
             v = &vertex_map[neighboor.y][neighboor.x];
-            v->cost = u->cost + v->self_cost;                               //on addiditone les poids
+            v->cost = u->cost + v->self_cost;//on addiditone les poids
             v->heuristic = v->cost + point_distance(v->coord, destination); //on calcule l'heuristic
             v->parent = u;
             if (false == in_open_list)
@@ -172,8 +172,7 @@ bool astar(int map[MAP_HEIGHT][MAP_WIDTH], points origin, points destination, ar
     return false;
 }
 
-int main(int argc, const char *argv[])
-{
+int main(int argc, const char *argv[]){
     system("clear");
     printf("A* INFORMATIONS:\nmap 40*40 (dossier map, 1 signfie que vous pouvez marcher et 0 est un obstacle), 4 coffres possibles, 1 vrai coffre ! Bonne chance.\n\n");
     array_t road[4];
@@ -192,6 +191,7 @@ int main(int argc, const char *argv[])
     bool chest_find = false;
     int i = 0;
     int test_first = 0;
+    array_t alreadyTry[5];
     do
     {
         printf("Choisissez le coffre que vous voulez tester (0,1,2,3): ");
@@ -199,14 +199,15 @@ int main(int argc, const char *argv[])
         if( test_first != 0){//permet de vérifier si c'est notre premier essai
             spawn = chests[i];//sinon on update le spawn avec le coffre cherché avant
         }
-        if (false == astar(map, spawn, chests[i], &road[i])) //si astar renvoi false, la route est impossible
-        {
+        if (false == astar(map, spawn, chests[i], &road[i])){ //si astar renvoi false, la route est impossible
             printf("Erreur de coordonnées\n");
             return 1;
         }
-
+        //besoin de "bloquer" les coffres déjà validé avec genre un tab qui regroupent les truc déjà test
         size_t road_size = array_get_size(&road[i]); //else on recup la taille de la liste fermé
         printf("\nCoffre numéro %d, %ld mouvements nécessaires, voici les coordonnées du chemin à parcourir :\n", i, road_size);
+        printf("Depart -> (%d,%d)\n", spawn.x,spawn.y );
+        printf("Objectif -> (%d,%d)\n\n", chests[i].x,chests[i].y);
         for (int j = 0; j < road_size; ++j) //puis on affiche toutes les coord de la route
         {
             elements *vertex = (elements *)array_get(&road[i], j);
@@ -214,14 +215,13 @@ int main(int argc, const char *argv[])
         }
 
         array_destroy(&road[i]); // on "détruit" les routes pour la mémoire et pour pouvoir eviter les bug quand on recommence
-        if (i == good_chest)
-        {
+        if (i == good_chest){
             printf("Bravo c'est le bon coffre !\n");
             chest_find = true;
         }
-        else
-        {
+        else{
             printf("Dommage ce n'est pas le bon coffre !\n");
+            array_add(alreadyTry,i);
         }
     test_first ++;
     } while (chest_find == false);

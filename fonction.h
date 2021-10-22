@@ -45,12 +45,12 @@ static inline int point_distance(points left, points right) {
 typedef struct array_t
 {
     void **_storage;
-    size_t _capacity;
-    size_t _size;
-    int _should_free_items;
+    size_t _capacity; //size_t = unsigned int ET unsigned long int
+    size_t _size;// Nombre "d'élèments" rempli de l'array
+    int _should_free_items; //peut on clear des élèments de l'array
 } array_t;
 
-void array_new(array_t *arr, size_t capacity, int should_free_items);
+void array_new(array_t *array, size_t capacity, int should_free_items);
 void array_destroy(array_t *array);
 void array_reserve(array_t *array, size_t capacity);
 void array_add(array_t *array, void *elem);

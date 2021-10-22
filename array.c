@@ -1,3 +1,6 @@
+/*
+Listes de fonctions pour gérer les tableaux
+*/
 #include "fonction.h"
 #include <assert.h>
 #include <stdlib.h>
@@ -18,12 +21,12 @@ static void array_free_item(array_t *array, size_t loc) // clear l'adresse d'un 
         free(array->_storage[loc]);
 }
 
-void array_new(array_t *arr, size_t capacity, int should_free_items) //faire un nouveau tableau
+void array_new(array_t *array, size_t capacity, int should_free_items) //faire un nouveau tableau
 {
-    arr->_storage = malloc(sizeof(void*) * capacity); // 
-    arr->_capacity = capacity; // on indique la capacity
-    arr->_size = 0; // on int la taille a 0
-    arr->_should_free_items = should_free_items; // on indique si le tableau peut clear ou pas
+    array->_storage = malloc(sizeof(void*) * capacity); //On alloue la mémoire pour l'array
+    array->_capacity = capacity; // on indique la capacity
+    array->_size = 0; // Nombre "d'élèments" rempli de l'array
+    array->_should_free_items = should_free_items; // on indique si le tableau peut clear ou pas
 }
 
 void array_destroy(array_t *array) // destruction d'un tableau
@@ -41,7 +44,7 @@ void array_destroy(array_t *array) // destruction d'un tableau
     array->_size = 0; // on set a 0 la size (sécurité)
 }
 
-void array_reserve(array_t *array, size_t newCapacity) // augmente la capacity d'un tab
+void array_reserve(array_t *array, size_t newCapacity) // augmente la capacité d'un tab
 {
     assert(NULL != array);
     if (newCapacity <= array->_capacity) // vérification que la capacité est pas < à l'ancienne
@@ -53,7 +56,7 @@ void array_reserve(array_t *array, size_t newCapacity) // augmente la capacity d
 }
 
 
-void array_add(array_t *array, void *elem) // Ajouter un élements à la fin
+void array_add(array_t *array, void *elem) // Ajouter un élements à la fin de l'array
 {
     assert(NULL != array);
     if (array->_size + 1 > array->_capacity) // On vérifie la capacité
@@ -64,7 +67,7 @@ void array_add(array_t *array, void *elem) // Ajouter un élements à la fin
     array->_size++; // update de la size
 }
 
-void array_reverse(array_t *array)// augmenter la capacité en mémoire
+void array_reverse(array_t *array)//Inverser un tableau
 {
     assert(NULL != array);
     
@@ -76,14 +79,14 @@ void array_reverse(array_t *array)// augmenter la capacité en mémoire
     }
 }
 
-void *array_get(array_t *array, size_t index) // recup un elem du rang index
+void *array_get(array_t *array, size_t index) // recup un element du rang index
 {
     assert(NULL != array);
     assert(index < array->_size);
     return array->_storage[index];
 }
 
-size_t array_get_size(array_t *array) // recup la taille
+size_t array_get_size(array_t *array) // recup la taille du tableau
 {
     assert(NULL != array);
     return array->_size;
